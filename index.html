@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Original Shape | کالکشن خاص</title>
+<style>
+:root{--bg:#0d0d0e;--panel:#19191b;--gold:#d5b574;--text:#f5f1e9;--muted:#aaa39a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}
+header{padding:34px 18px;text-align:center;border-bottom:1px solid #4b3d28;background:linear-gradient(#242019,#0d0d0e)}
+.brand{font: bold 34px Georgia,serif;letter-spacing:3px;color:var(--gold)}
+.subtitle{color:var(--muted);font-size:13px;margin-top:12px}
+main{max-width:1100px;margin:auto;padding:24px 16px}
+h2{color:var(--gold);font-size:20px}
+input,textarea,button{font:inherit}
+input,textarea{width:100%;padding:13px;margin:7px 0;background:#222;border:1px solid #54462f;border-radius:10px;color:white}
+button,.btn{display:inline-block;padding:12px 18px;border:1px solid var(--gold);border-radius:10px;background:var(--gold);color:#16120b;cursor:pointer;text-decoration:none;font-weight:bold}
+button.secondary{background:transparent;color:var(--gold)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:24px 0}
+.toolbar input{flex:1;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid #4b3d28;border-radius:15px;overflow:hidden}
+.card img{width:100%;height:270px;object-fit:contain;background:#101010}
+.card-body{padding:17px}
+.card h3{margin:0 0 10px;color:var(--gold)}
+.card p{color:#c6bfb4;line-height:1.8;font-size:13px;white-space:pre-wrap}
+.volume{color:#ddd;font-size:13px;margin-bottom:15px}
+.card .btn{display:block;text-align:center}
+.admin{margin-top:55px;padding:20px;border:1px solid #4b3d28;border-radius:15px;background:#151515}
+.admin h2{margin-top:0}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.admin-actions button{padding:8px 12px;font-size:12px}
+.hidden{display:none!important}
+.notice{color:#e5c994;line-height:1.9}
+footer{text-align:center;padding:30px;color:#928a7b;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">ORIGINAL SHAPE</div>
+<div class="subtitle">انتخابی متفاوت برای سلیقه‌های خاص</div>
+</header>
+<main>
+<h2>کالکشن محصولات</h2>
+<p class="notice">برای اطلاع از قیمت و ثبت سفارش، از طریق تلگرام پیام دهید.</p>
+<div class="toolbar">
+<input id="search" placeholder="جست‌وجوی محصول یا حجم...">
+<a class="btn" href="https://t.me/OriginalShapeShop" target="_blank" rel="noopener">ارتباط در تلگرام</a>
+</div>
+<div id="products" class="grid"></div>
+<p id="status" class="notice">در حال دریافت محصولات...</p>
+
+<section class="admin">
+<h2>مدیریت فروشگاه</h2>
+<div id="loginBox">
+<input id="email" type="email" placeholder="ایمیل مدیر" autocomplete="username">
+<input id="password" type="password" placeholder="رمز عبور" autocomplete="current-password">
+<button id="loginBtn">ورود مدیر</button>
+</div>
+<div id="adminBox" class="hidden">
+<p class="notice">برای افزودن محصول جدید یا ویرایش محصولات موجود از فرم زیر استفاده کن.</p>
+<input id="productId" type="hidden">
+<input id="name" placeholder="نام محصول">
+<input id="volume" placeholder="حجم، مثلاً 700 میلی‌لیتر">
+<textarea id="description" rows="3" placeholder="توضیحات محصول"></textarea>
+<input id="sortOrder" type="number" value="0" placeholder="ترتیب نمایش">
+<label><input id="isActive" type="checkbox" checked style="width:auto"> نمایش محصول در سایت</label>
+<p>عکس محصول (JPEG، PNG یا WebP، حداکثر ۵ مگابایت)</p>
+<input id="image" type="file" accept="image/jpeg,image/png,image/webp">
+<button id="saveBtn">ذخیره محصول</button>
+<button id="resetBtn" class="secondary">محصول جدید</button>
+<button id="logoutBtn" class="secondary">خروج</button>
+</div>
+<p id="adminStatus" class="notice"></p>
+</section>
+</main>
+<footer>ORIGINAL SHAPE © 2026</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const URL_BASE='https://olzoszgubjunyplefops.supabase.co';
+const PUBLIC_KEY='sb_publishable_EUWfKZNA03M6SJuHaFxW6g_e78zzXcG';
+const ADMIN_ID='4f299175-2fe8-4d57-b26a-58905f97d8bc';
+const db=window.supabase.createClient(URL_BASE,PUBLIC_KEY);
+const $=id=>document.getElementById(id);
+let products=[],admin=false;
+
+function escapeHtml(s){
+ return String(s??'').replace(/[&<>"']/g,c=>({
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ })[c]);
+}
+function telegramLink(name){
+ return 'https://t.me/OriginalShapeShop';
+}
+function render(){
+ const q=$('search').value.trim().toLowerCase();
+ const visible=products.filter(p=>(admin||p.is_active)&&
+  [p.name,p.description,p.volume].some(v=>String(v??'').toLowerCase().includes(q)));
+ $('products').innerHTML=visible.map(p=>`
+ <article class="card">
+ ${p.image_url?`<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy">`:
+ '<div style="height:270px;display:grid;place-items:center;color:#bca16c">ORIGINAL SHAPE</div>'}
+ <div class="card-body">
+ <h3>${escapeHtml(p.name)}</h3>
+ <div class="volume">${escapeHtml(p.volume)}</div>
+ <p>${escapeHtml(p.description)}</p>
+ ${!p.is_active?'<p class="notice">مخفی از بازدیدکنندگان</p>':''}
+ <a class="btn" href="${telegramLink(p.name)}" target="_blank" rel="noopener">استعلام قیمت و سفارش</a>
+ ${admin?`<div class="admin-actions">
+ <button class="secondary" data-edit="${p.id}">ویرایش</button>
+ <button class="secondary" data-delete="${p.id}">حذف</button>
+ </div>`:''}
+ </div></article>`).join('');
+ $('status').textContent=visible.length?'':'فعلاً محصولی برای نمایش وجود ندارد.';
+}
+async function load(){
+ $('status').textContent='در حال دریافت محصولات...';
+ const {data,error}=await db.from('products').select('*')
+ .order('sort_order',{ascending:true}).order('id',{ascending:false});
+ if(error){$('status').textContent='خطا در دریافت محصولات: '+error.message;return;}
+ products=data||[];render();
+}
+async function checkAdmin(){
+ const {data}=await db.auth.getUser();
+ admin=data?.user?.id===ADMIN_ID;
+ $('loginBox').classList.toggle('hidden',admin);
+ $('adminBox').classList.toggle('hidden',!admin);
+ await load();
+}
+$('loginBtn').onclick=async()=>{
+ $('adminStatus').textContent='در حال ورود...';
+ const {error}=await db.auth.signInWithPassword({
+ email:$('email').value.trim(),password:$('password').value
+ });
+ if(error){$('adminStatus').textContent='ورود ناموفق: '+error.message;return;}
+ $('password').value='';
+ await checkAdmin();
+ $('adminStatus').textContent=admin?'ورود مدیر موفق بود.':'این حساب مجوز مدیریت ندارد.';
+};
+$('logoutBtn').onclick=async()=>{
+ await db.auth.signOut();resetForm();await checkAdmin();
+ $('adminStatus').textContent='از حساب مدیریت خارج شدی.';
+};
+function resetForm(){
+ $('productId').value='';$('name').value='';$('volume').value='';
+ $('description').value='';$('sortOrder').value='0';
+ $('isActive').checked=true;$('image').value='';
+}
+$('resetBtn').onclick=resetForm;
+$('saveBtn').onclick=async()=>{
+ if(!admin)return;
+ const name=$('name').value.trim();
+ if(!name){$('adminStatus').textContent='نام محصول را وارد کن.';return;}
+ const btn=$('saveBtn');btn.disabled=true;
+ $('adminStatus').textContent='در حال ذخیره...';
+ try{
+  let imageUrl;
+  const file=$('image').files[0];
+  if(file){
+   if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('فرمت عکس مجاز نیست.');
+   if(file.size>5*1024*1024)throw Error('حجم عکس بیشتر از ۵ مگابایت است.');
+   const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];
+   const path=`products/${crypto.randomUUID()}.${ext}`;
+   const {error:uploadError}=await db.storage.from('product-images').upload(path,file,{contentType:file.type});
+   if(uploadError)throw uploadError;
+   imageUrl=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;
+  }
+  const payload={
+   name,volume:$('volume').value.trim(),
+   description:$('description').value.trim(),
+   sort_order:Number($('sortOrder').value)||0,
+   is_active:$('isActive').checked
+  };
+  if(imageUrl)payload.image_url=imageUrl;
+  const id=$('productId').value;
+  const result=id?
+   await db.from('products').update(payload).eq('id',Number(id)):
+   await db.from('products').insert(payload);
+  if(result.error)throw result.error;
+  resetForm();await load();
+  $('adminStatus').textContent='محصول با موفقیت ذخیره شد.';
+ }catch(e){$('adminStatus').textContent='خطا: '+e.message;}
+ finally{btn.disabled=false;}
+};
+$('products').addEventListener('click',async e=>{
+ const edit=e.target.closest('[data-edit]');
+ const del=e.target.closest('[data-delete]');
+ if(!admin)return;
+ if(edit){
+  const p=products.find(x=>String(x.id)===edit.dataset.edit);
+  if(!p)return;
+  $('productId').value=p.id;$('name').value=p.name||'';
+  $('volume').value=p.volume||'';$('description').value=p.description||'';
+  $('sortOrder').value=p.sort_order??0;$('isActive').checked=!!p.is_active;
+  $('image').value='';
+  document.querySelector('.admin').scrollIntoView({behavior:'smooth'});
+ }
+ if(del){
+  if(!confirm('این محصول از جدول حذف شود؟'))return;
+  const {error}=await db.from('products').delete().eq('id',Number(del.dataset.delete));
+  $('adminStatus').textContent=error?'خطا: '+error.message:'محصول حذف شد.';
+  if(!error)await load();
+ }
+});
+$('search').addEventListener('input',render);
+checkAdmin();
+</script>
+</body>
+</html>
