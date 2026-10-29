@@ -23,6 +23,7 @@ button.secondary,.btn.secondary{background:transparent;color:var(--gold)}button:
 .gallery-nav{position:absolute;top:50%;transform:translateY(-50%);padding:0;width:39px;height:39px;border-radius:50%;background:#161616e8;color:var(--gold);font-size:27px;line-height:1}
 .gallery-prev{right:7px}.gallery-next{left:7px}.gallery-counter{position:absolute;bottom:8px;left:8px;padding:1px 9px;background:#080808d9;border-radius:18px;color:#f8dda1;font-size:12px;direction:ltr}
 .card-body{padding:17px;display:flex;flex-direction:column;flex:1}.card h3{margin:0 0 6px;color:var(--gold);font-size:17px;overflow-wrap:anywhere}.card p{color:#c6bfb4;font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.stock-label{display:inline-flex;align-items:center;align-self:flex-start;padding:3px 11px;margin:7px 0;border-radius:25px;font-size:12px;font-weight:bold;border:1px solid #367e59;background:#113524;color:#a3efc1}.stock-label.unavailable{border-color:#985354;background:#3b1b1d;color:#ffc0c0}
 .category{color:#d5b574;font-size:11px;margin:0 0 8px}.volume{color:#ddd;font-size:13px;margin:5px 0 13px;direction:auto}.card .inquiry{width:100%;margin-top:auto}
 .admin{margin-top:55px;padding:20px;border:1px solid var(--line);border-radius:15px;background:#151515}.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.admin-actions button{padding:8px 12px;font-size:12px}
 .notice{color:#e5c994;line-height:1.9}.hidden{display:none!important}.field-label{display:block;color:#ded2be;font-size:13px;margin:12px 0 3px}.small{font-size:12px;color:var(--muted)}
@@ -34,8 +35,8 @@ footer{text-align:center;padding:30px;color:#928a7b;font-size:12px}.modal{positi
 <body>
 <header><div class="brand">ORIGINAL SHAPE</div><div class="subtitle">انتخابی متفاوت برای سلیقه‌های خاص</div></header>
 <main>
-<h2>کالکشن محصولات</h2><p class="notice">برای اطلاع از قیمت و ثبت سفارش، محصول دلخواه خود را انتخاب کنید.</p>
-<div class="toolbar"><input id="search" type="search" placeholder="جست‌وجوی نام، حجم یا دسته‌بندی محصول..." aria-label="جست‌وجوی محصولات"><a class="btn secondary" href="https://t.me/OriginalShapeShop" target="_blank" rel="noopener noreferrer">ارتباط مستقیم در تلگرام</a></div>
+<h2>کالکشن محصولات</h2><p class="notice">برای استعلام قیمت، محصول دلخواه را انتخاب کنید. نام و کد آن در تلگرام آماده می‌شود.</p>
+<div class="toolbar"><input id="search" type="search" placeholder="جست‌وجوی نام، کد، حجم یا دسته‌بندی محصول..." aria-label="جست‌وجوی محصولات"><a class="btn secondary" href="https://t.me/OriginalShapeShop" target="_blank" rel="noopener noreferrer">ارتباط مستقیم در تلگرام</a></div>
 <div id="categoryFilters" class="chips" aria-label="دسته‌بندی محصولات"></div><div id="resultCount" class="count"></div>
 <div id="products" class="grid"></div><p id="status" class="notice">در حال دریافت محصولات...</p>
 <section class="admin"><h2>مدیریت فروشگاه</h2>
@@ -48,6 +49,7 @@ footer{text-align:center;padding:30px;color:#928a7b;font-size:12px}.modal{positi
 <label class="field-label" for="volume">حجم</label><input id="volume" placeholder="مثلاً 700 میلی‌لیتر">
 <label class="field-label" for="description">توضیحات محصول</label><textarea id="description" rows="3" placeholder="توضیحات محصول"></textarea>
 <label class="field-label" for="sortOrder">ترتیب نمایش</label><input id="sortOrder" type="number" value="0">
+<label class="field-label" for="isInStock">وضعیت موجودی</label><select id="isInStock"><option value="1">موجود</option><option value="0">ناموجود</option></select>
 <label class="field-label"><input id="isActive" type="checkbox" checked> نمایش محصول در سایت</label>
 <label class="field-label" for="image">عکس‌های محصول (حداکثر ۵ عکس؛ هر عکس تا ۵ مگابایت)</label><input id="image" type="file" accept="image/jpeg,image/png,image/webp" multiple>
 <p class="small">می‌توانی چند عکس را یکجا انتخاب کنی؛ هنگام ویرایش هم عکس جدید به عکس‌های قبلی اضافه می‌شود. اولین عکس، عکس اصلی محصول است.</p>
@@ -55,15 +57,6 @@ footer{text-align:center;padding:30px;color:#928a7b;font-size:12px}.modal{positi
 <div class="admin-actions"><button id="saveBtn" type="button">ذخیره محصول</button><button id="resetBtn" class="secondary" type="button">محصول جدید</button><button id="logoutBtn" class="secondary" type="button">خروج</button></div>
 </div><p id="adminStatus" class="notice" role="status"></p></section>
 </main>
-<div id="inquiryModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="inquiryTitle"><div class="modal-panel"><div class="modal-top"><h2 id="inquiryTitle">استعلام قیمت و سفارش</h2><button type="button" id="closeInquiry" class="modal-close" aria-label="بستن">×</button></div>
-<div id="inquiryProduct" class="inquiry-product"></div>
-<p class="small">اطلاعات زیر فقط داخل پیام آماده تلگرام قرار می‌گیرد و در سایت ذخیره نمی‌شود.</p>
-<label class="field-label" for="buyerName">نام خریدار (اختیاری)</label><input id="buyerName" placeholder="نام شما" autocomplete="name">
-<label class="field-label" for="buyerCity">شهر (اختیاری)</label><input id="buyerCity" placeholder="شهر شما">
-<label class="field-label" for="buyerQty">تعداد موردنظر</label><input id="buyerQty" type="number" min="1" max="9999" value="1" inputmode="numeric">
-<label class="field-label" for="buyerNote">توضیحات (اختیاری)</label><textarea id="buyerNote" rows="2" placeholder="سؤال یا توضیح شما"></textarea>
-<div class="modal-actions"><button id="sendInquiry" type="button">ادامه در تلگرام</button><button id="cancelInquiry" class="secondary" type="button">انصراف</button></div>
-<p class="small">فعلاً لینک عکس‌ها در متن استعلام قرار می‌گیرد. ارسال خودکار فایل عکس نیاز به اتصال امن ربات تلگرام دارد.</p></div></div>
 <footer>ORIGINAL SHAPE © 2026</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -74,9 +67,10 @@ const PUBLIC_KEY='sb_publishable_EUWfKZNA03M6SJuHaFxW6g_e78zzXcG';
 const ADMIN_ID='4f299175-2fe8-4d57-b26a-58905f97d8bc';
 const db=window.supabase.createClient(URL_BASE,PUBLIC_KEY);
 const $=id=>document.getElementById(id);
-let products=[],admin=false,activeCategory='همه',selectedProduct=null,editingImages=[];
+let products=[],admin=false,activeCategory='همه',editingImages=[];
 const CATEGORY_PATTERN=/^\[\[OS_CATEGORY:([^\]\r\n]{1,80})\]\]\s*\n?/;
 const IMAGES_PATTERN=/^\[\[OS_IMAGES:([^\]\r\n]{1,6000})\]\]\n?/;
+const STOCK_PATTERN=/^\[\[OS_STOCK:([01])\]\]\n?/;
 const allowedTypes={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
 function safeImageUrl(value){try{const u=new URL(String(value));return u.protocol==='https:'?u.href:''}catch{return ''}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -85,15 +79,19 @@ function splitDescription(value){
  let description=match?raw.slice(match[0].length):raw;
  const found=description.match(IMAGES_PATTERN);let images=[];
  if(found){try{const parsed=JSON.parse(decodeURIComponent(found[1]));if(Array.isArray(parsed))images=parsed.map(safeImageUrl).filter(Boolean).slice(0,5)}catch{}description=description.slice(found[0].length)}
- return {category:match?match[1].trim():'سایر محصولات',description,images};
+ const stockMatch=description.match(STOCK_PATTERN);
+ const inStock=stockMatch?stockMatch[1]==='1':true;
+ if(stockMatch)description=description.slice(stockMatch[0].length);
+ return {category:match?match[1].trim():'سایر محصولات',description,images,inStock};
 }
-function buildDescription(category,description,images){
+function buildDescription(category,description,images,inStock=true){
  const safe=String(category||'سایر محصولات').trim().replace(/[\[\]\r\n]/g,'').slice(0,80)||'سایر محصولات';
  const links=[...new Set(images.map(safeImageUrl).filter(Boolean))].slice(0,5);
  const metadata=links.length?'[[OS_IMAGES:'+encodeURIComponent(JSON.stringify(links))+']]\n':'';
- return '[[OS_CATEGORY:'+safe+']]\n'+metadata+description;
+ return '[[OS_CATEGORY:'+safe+']]\n'+metadata+'[[OS_STOCK:'+(inStock?'1':'0')+']]\n'+description;
 }
 function getCategory(p){return splitDescription(p.description).category}
+function productCode(p){return 'OS-'+String(p.id).padStart(4,'0')}
 function getImages(p){const images=splitDescription(p.description).images;return images.length?images:(safeImageUrl(p.image_url)?[safeImageUrl(p.image_url)]:[])}
 function renderCategories(){
  const categories=['همه',...new Set(products.filter(p=>admin||p.is_active).map(getCategory))];
@@ -103,14 +101,14 @@ function renderCategories(){
 }
 function render(){
  const q=$('search').value.trim().toLocaleLowerCase();renderCategories();
- const list=products.filter(p=>{if(!admin&&!p.is_active)return false;const info=splitDescription(p.description);if(activeCategory!=='همه'&&info.category!==activeCategory)return false;return [p.name,p.volume,info.category,info.description].some(v=>String(v??'').toLocaleLowerCase().includes(q))});
+ const list=products.filter(p=>{if(!admin&&!p.is_active)return false;const info=splitDescription(p.description);if(activeCategory!=='همه'&&info.category!==activeCategory)return false;return [p.name,productCode(p),p.volume,info.category,info.description,info.inStock?'موجود':'ناموجود'].some(v=>String(v??'').toLocaleLowerCase().includes(q))});
  $('products').innerHTML=list.map(p=>{
   const info=splitDescription(p.description),imgs=getImages(p),photo=imgs[0];
   return `<article class="card" data-id="${esc(p.id)}">
    ${photo?`<div class="gallery"><img src="${esc(photo)}" loading="lazy" alt="${esc(p.name)}">${imgs.length>1?`<button type="button" data-dir="prev" class="gallery-nav gallery-prev" aria-label="عکس قبلی">‹</button><button type="button" data-dir="next" class="gallery-nav gallery-next" aria-label="عکس بعدی">›</button><span class="gallery-counter">1 / ${imgs.length}</span>`:''}</div>`:'<div class="no-photo">ORIGINAL SHAPE</div>'}
-   <div class="card-body"><div class="category">${esc(info.category)}</div><h3>${esc(p.name)}</h3><div class="volume">${esc(p.volume)}</div><p>${esc(info.description)}</p>
+   <div class="card-body"><div class="category">${esc(info.category)}</div><h3>${esc(p.name)}</h3><div class="small">کد محصول: <b dir="ltr">${esc(productCode(p))}</b></div><span class="stock-label ${info.inStock?'':'unavailable'}">${info.inStock?'موجود':'ناموجود'}</span><div class="volume">${esc(p.volume)}</div><p>${esc(info.description)}</p>
    ${!p.is_active?'<p class="notice">مخفی از بازدیدکنندگان</p>':''}
-   <button type="button" class="inquiry" data-inquiry="${esc(p.id)}">استعلام قیمت و سفارش</button>
+   <button type="button" class="inquiry" data-inquiry="${esc(p.id)}">${info.inStock?'استعلام قیمت و سفارش':'استعلام موجودی'}</button>
    ${admin?`<div class="admin-actions"><button type="button" class="secondary" data-edit="${esc(p.id)}">ویرایش</button><button type="button" class="secondary" data-delete="${esc(p.id)}">حذف</button></div>`:''}
    </div></article>`;
  }).join('');
@@ -130,7 +128,7 @@ $('loginBtn').onclick=async()=>{ $('adminStatus').textContent='در حال ور�
 $('logoutBtn').onclick=async()=>{await db.auth.signOut();resetForm();await checkAdmin();$('adminStatus').textContent='از حساب مدیریت خارج شدی.'};
 function renderImageEditor(){ $('photoThumbnails').innerHTML=editingImages.map((u,i)=>`<div class="thumb"><img src="${esc(u)}" alt="عکس ${i+1}"><button type="button" data-remove-photo="${i}" aria-label="حذف عکس">×</button><small>${i?'عکس '+(i+1):'عکس اصلی'}</small></div>`).join('') }
 $('photoThumbnails').addEventListener('click',e=>{const btn=e.target.closest('[data-remove-photo]');if(!btn)return;editingImages.splice(Number(btn.dataset.removePhoto),1);renderImageEditor()});
-function resetForm(){ $('productId').value='';$('name').value='';$('category').value='';$('volume').value='';$('description').value='';$('sortOrder').value='0';$('isActive').checked=true;$('image').value='';editingImages=[];renderImageEditor() }
+function resetForm(){ $('productId').value='';$('name').value='';$('category').value='';$('volume').value='';$('description').value='';$('sortOrder').value='0';$('isActive').checked=true;$('isInStock').value='1';$('image').value='';editingImages=[];renderImageEditor() }
 $('resetBtn').onclick=resetForm;
 $('saveBtn').onclick=async()=>{
  if(!admin)return;const name=$('name').value.trim();if(!name){$('adminStatus').textContent='نام محصول را وارد کن.';return}
@@ -145,7 +143,7 @@ $('saveBtn').onclick=async()=>{
    const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type});if(error)throw error;
    allImages.push(db.storage.from('product-images').getPublicUrl(path).data.publicUrl);
   }
-  const payload={name,volume:$('volume').value.trim(),description:buildDescription($('category').value,$('description').value.trim(),allImages),image_url:allImages[0]||null,sort_order:Number($('sortOrder').value)||0,is_active:$('isActive').checked};
+  const payload={name,volume:$('volume').value.trim(),description:buildDescription($('category').value,$('description').value.trim(),allImages,$('isInStock').value==='1'),image_url:allImages[0]||null,sort_order:Number($('sortOrder').value)||0,is_active:$('isActive').checked};
   const id=$('productId').value;
   const result=id?await db.from('products').update(payload).eq('id',Number(id)):await db.from('products').insert(payload);
   if(result.error)throw result.error;
@@ -153,22 +151,12 @@ $('saveBtn').onclick=async()=>{
  }catch(e){$('adminStatus').textContent='خطا: '+e.message}finally{btn.disabled=false}
 };
 function openInquiry(p){
- selectedProduct=p;const photo=getImages(p)[0];
- $('inquiryProduct').innerHTML=`${photo?`<img src="${esc(photo)}" alt="">`:''}<div><strong>${esc(p.name)}</strong><div class="small">${esc(p.volume||'')}</div><div class="small">${esc(getCategory(p))}</div></div>`;
- $('buyerName').value='';$('buyerCity').value='';$('buyerQty').value='1';$('buyerNote').value='';$('inquiryModal').classList.remove('hidden');document.body.style.overflow='hidden';$('buyerName').focus();
+ const text=['سلام، درباره این محصول استعلام دارم:',
+  'نام محصول: '+String(p.name||''),
+  'کد محصول: '+productCode(p)].join('\n');
+ // The customer confirms sending inside Telegram; no image is sent.
+ window.location.href='https://t.me/OriginalShapeShop?text='+encodeURIComponent(text);
 }
-function closeInquiry(){selectedProduct=null;$('inquiryModal').classList.add('hidden');document.body.style.overflow=''}
-$('closeInquiry').onclick=closeInquiry;$('cancelInquiry').onclick=closeInquiry;
-$('inquiryModal').addEventListener('click',e=>{if(e.target===$('inquiryModal'))closeInquiry()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInquiry()});
-$('sendInquiry').onclick=()=>{
- const p=selectedProduct;if(!p)return;const qty=Math.max(1,Math.min(9999,Math.floor(Number($('buyerQty').value)||1)));
- const lines=['سلام، برای محصول زیر درخواست استعلام قیمت دارم:',`محصول: ${p.name||''}`,`حجم: ${p.volume||'نامشخص'}`,`دسته‌بندی: ${getCategory(p)}`,`تعداد: ${qty}`];
- if($('buyerName').value.trim())lines.push('نام خریدار: '+$('buyerName').value.trim().slice(0,100));
- if($('buyerCity').value.trim())lines.push('شهر: '+$('buyerCity').value.trim().slice(0,100));
- if($('buyerNote').value.trim())lines.push('توضیحات: '+$('buyerNote').value.trim().slice(0,400));
- const photos=getImages(p);photos.forEach((url,i)=>lines.push(`عکس ${i+1}: ${url}`));
- window.location.href='https://t.me/OriginalShapeShop?text='+encodeURIComponent(lines.join('\n'));
-};
 $('products').addEventListener('click',async e=>{
  const nav=e.target.closest('[data-dir]');if(nav){
   const card=nav.closest('.card'),p=products.find(x=>String(x.id)===card.dataset.id);if(!p)return;
@@ -179,7 +167,7 @@ $('products').addEventListener('click',async e=>{
  if(!admin)return;
  const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');
  if(edit){const p=products.find(x=>String(x.id)===edit.dataset.edit);if(!p)return;const info=splitDescription(p.description);
-  $('productId').value=p.id;$('name').value=p.name||'';$('category').value=info.category;$('volume').value=p.volume||'';$('description').value=info.description;$('sortOrder').value=p.sort_order??0;$('isActive').checked=!!p.is_active;$('image').value='';editingImages=[...getImages(p)];renderImageEditor();document.querySelector('.admin').scrollIntoView({behavior:'smooth'});return}
+  $('productId').value=p.id;$('name').value=p.name||'';$('category').value=info.category;$('volume').value=p.volume||'';$('description').value=info.description;$('sortOrder').value=p.sort_order??0;$('isActive').checked=!!p.is_active;$('isInStock').value=info.inStock?'1':'0';$('image').value='';editingImages=[...getImages(p)];renderImageEditor();document.querySelector('.admin').scrollIntoView({behavior:'smooth'});return}
  if(del){if(!confirm('این محصول از جدول حذف شود؟'))return;const {error}=await db.from('products').delete().eq('id',Number(del.dataset.delete));$('adminStatus').textContent=error?'خطا: '+error.message:'محصول حذف شد.';if(!error)await load()}
 });
 $('search').addEventListener('input',render);
