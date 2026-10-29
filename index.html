@@ -9,12 +9,26 @@
 :root{--bg:#0d0d0e;--panel:#19191b;--gold:#d5b574;--text:#f5f1e9;--muted:#aaa39a;--line:#4b3d28}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif;line-height:1.85}
 header{padding:38px 16px 32px;text-align:center;border-bottom:1px solid var(--line);background:linear-gradient(#262015,#0d0d0e)}
-.brand{font:bold clamp(28px,7vw,42px) Georgia,serif;letter-spacing:3px;color:var(--gold)}.subtitle{color:var(--muted);font-size:13px;margin-top:8px}
+.brand{font:bold clamp(28px,7vw,42px) Georgia,serif;letter-spacing:3px;color:var(--gold)}.subtitle{color:var(--gold);font-size:clamp(15px,3.6vw,19px);font-weight:bold;margin-top:12px}.brand-description{color:#d4c8b5;font-size:13px;line-height:2;max-width:650px;margin:8px auto 0;padding:0 12px}
 main{max-width:1100px;margin:auto;padding:26px 16px}h2{color:var(--gold);font-size:20px;margin:0 0 12px}p{margin:10px 0}
 input,textarea,button,select{font:inherit}input,textarea,select{width:100%;padding:12px;margin:6px 0;background:#222;border:1px solid #54462f;border-radius:10px;color:#fff;min-width:0}
 input:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}input[type=checkbox]{width:auto;accent-color:var(--gold)}
 button,.btn{display:inline-block;padding:11px 17px;border:1px solid var(--gold);border-radius:10px;background:var(--gold);color:#16120b;cursor:pointer;text-decoration:none;font-weight:bold;line-height:1.6;text-align:center}
 button.secondary,.btn.secondary{background:transparent;color:var(--gold)}button:disabled{opacity:.65;cursor:wait}
+.cart-open{white-space:nowrap}.cart-count{display:inline-block;min-width:25px;padding:0 6px;border-radius:20px;background:#16120b;color:var(--gold);font-size:12px;margin-right:5px}
+.cart-dock{position:fixed;z-index:25;left:12px;right:12px;bottom:14px;max-width:520px;margin-inline:auto;box-shadow:0 8px 30px #0009;border:1px solid var(--gold);background:#191713;color:var(--gold);padding:12px 18px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cart-dock span{font-size:13px}body.has-cart{padding-bottom:84px}
+.cart-item{display:flex;gap:11px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}
+.cart-item img,.cart-no-photo{flex-shrink:0;width:60px;height:70px;object-fit:contain;background:#111;border-radius:8px}
+.cart-details{flex:1;min-width:0}.cart-details strong{color:var(--gold);display:block;overflow-wrap:anywhere}
+.cart-item .small{display:block}.cart-qty{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.cart-qty button{width:36px;height:36px;padding:0;line-height:1;font-size:20px}
+.cart-qty input{width:65px;margin:0;padding:5px 4px;height:36px;text-align:center;direction:ltr}
+.cart-item .remove-item{background:none;color:#fac8c8;border:1px solid #885858;padding:5px 11px;font-size:12px;margin-top:7px}
+.cart-summary{padding:13px 0}.cart-actions{display:flex;gap:9px;flex-wrap:wrap}.cart-actions button{flex:1}
+.cart-empty{padding:25px 8px;color:var(--muted);text-align:center}.cart-add{width:100%;margin-top:9px}
+.cart-warning{color:#f1abab}.cart-busy{opacity:.7}
+
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:23px 0 12px}.toolbar input{flex:1;min-width:180px}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}.chip{background:#1e1c18;color:#e7d7b7;border:1px solid #685335;border-radius:30px;padding:7px 13px;font-size:12px}.chip.active{background:var(--gold);color:#181109}
 .count{font-size:12px;color:var(--muted);margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
@@ -33,10 +47,10 @@ footer{text-align:center;padding:30px;color:#928a7b;font-size:12px}.modal{positi
 </style>
 </head>
 <body>
-<header><div class="brand">ORIGINAL SHAPE</div><div class="subtitle">انتخابی متفاوت برای سلیقه‌های خاص</div></header>
+<header><div class="brand">ORIGINAL SHAPE</div><div class="subtitle">اصالت در انتخاب، تمایز در جزئیات</div><p class="brand-description">مجموعه‌ای از محصولات اورجینال و خاص، برای کسانی که به اصالت و کیفیت اهمیت می‌دهند.</p></header>
 <main>
-<h2>کالکشن محصولات</h2><p class="notice">برای استعلام قیمت، محصول دلخواه را انتخاب کنید. نام و کد آن در تلگرام آماده می‌شود.</p>
-<div class="toolbar"><input id="search" type="search" placeholder="جست‌وجوی نام، کد، حجم یا دسته‌بندی محصول..." aria-label="جست‌وجوی محصولات"><a class="btn secondary" href="https://t.me/OriginalShapeShop" target="_blank" rel="noopener noreferrer">ارتباط مستقیم در تلگرام</a></div>
+<h2>کالکشن محصولات</h2><p class="notice">برای یک محصول، «استعلام قیمت» را بزنید؛ برای چند محصول، آن‌ها را به سبد استعلام اضافه کنید و همه را یک‌جا بفرستید.</p>
+<div class="toolbar"><input id="search" type="search" placeholder="جست‌وجوی نام، کد، حجم یا دسته‌بندی محصول..." aria-label="جست‌وجوی محصولات"><a class="btn secondary" href="https://t.me/OriginalShapeShop" target="_blank" rel="noopener noreferrer">ارتباط مستقیم در تلگرام</a><button id="openCart" class="secondary cart-open" type="button">سبد استعلام <span class="cart-count" id="cartCount">۰</span></button></div>
 <div id="categoryFilters" class="chips" aria-label="دسته‌بندی محصولات"></div><div id="resultCount" class="count"></div>
 <div id="products" class="grid"></div><p id="status" class="notice">در حال دریافت محصولات...</p>
 <section class="admin"><h2>مدیریت فروشگاه</h2>
@@ -57,6 +71,17 @@ footer{text-align:center;padding:30px;color:#928a7b;font-size:12px}.modal{positi
 <div class="admin-actions"><button id="saveBtn" type="button">ذخیره محصول</button><button id="resetBtn" class="secondary" type="button">محصول جدید</button><button id="logoutBtn" class="secondary" type="button">خروج</button></div>
 </div><p id="adminStatus" class="notice" role="status"></p></section>
 </main>
+<button id="cartDock" class="cart-dock hidden" type="button" aria-label="مشاهده سبد استعلام"><strong>مشاهده سبد استعلام</strong><span id="cartDockCount"></span></button>
+<div id="cartModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+ <div class="modal-panel">
+  <div class="modal-top"><h2 id="cartTitle">سبد استعلام محصولات</h2><button id="closeCart" class="modal-close" type="button" aria-label="بستن سبد">×</button></div>
+  <p class="small">تعداد هر محصول را مشخص کنید. عکس و لینک در پیام تلگرام ارسال نمی‌شود.</p>
+  <div id="cartItems"></div>
+  <div id="cartSummary" class="cart-summary"></div>
+  <p id="cartStatus" class="small" role="status" aria-live="polite"></p>
+  <div class="cart-actions"><button id="sendCart" type="button">استعلام همه در تلگرام</button><button id="clearCart" type="button" class="secondary">خالی کردن سبد</button></div>
+ </div>
+</div>
 <footer>ORIGINAL SHAPE © 2026</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -68,6 +93,8 @@ const ADMIN_ID='4f299175-2fe8-4d57-b26a-58905f97d8bc';
 const db=window.supabase.createClient(URL_BASE,PUBLIC_KEY);
 const $=id=>document.getElementById(id);
 let products=[],admin=false,activeCategory='همه',editingImages=[];
+const CART_KEY='originalShapeInquiryCartV1';
+let cart=readCart();
 const CATEGORY_PATTERN=/^\[\[OS_CATEGORY:([^\]\r\n]{1,80})\]\]\s*\n?/;
 const IMAGES_PATTERN=/^\[\[OS_IMAGES:([^\]\r\n]{1,6000})\]\]\n?/;
 const STOCK_PATTERN=/^\[\[OS_STOCK:([01])\]\]\n?/;
@@ -93,6 +120,86 @@ function buildDescription(category,description,images,inStock=true){
 function getCategory(p){return splitDescription(p.description).category}
 function productCode(p){return 'OS-'+String(p.id).padStart(4,'0')}
 function getImages(p){const images=splitDescription(p.description).images;return images.length?images:(safeImageUrl(p.image_url)?[safeImageUrl(p.image_url)]:[])}
+function safeQty(n){const v=Number(n);return Number.isFinite(v)?Math.max(1,Math.min(9999,Math.trunc(v))):1}
+function readCart(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(CART_KEY)||'{}');
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return {};
+  return Object.fromEntries(Object.entries(raw).filter(([id,q])=>/^\d{1,15}$/.test(id)&&Number(q)>0).slice(0,50).map(([id,q])=>[id,safeQty(q)]));
+ }catch{return {}}
+}
+function saveCart(){try{localStorage.setItem(CART_KEY,JSON.stringify(cart))}catch{}updateCartBadge()}
+function cartEntries(){return Object.entries(cart).map(([id,qty])=>({id,qty,p:products.find(p=>String(p.id)===id)}))}
+function cartTotals(){const entries=cartEntries();return {types:entries.length,quantity:entries.reduce((n,e)=>n+e.qty,0)}}
+function updateCartBadge(){
+ const {types,quantity}=cartTotals();
+ $('cartCount').textContent=String(types);
+ $('cartDockCount').textContent=types+' مدل، '+quantity+' عدد';
+ $('cartDock').classList.toggle('hidden',!types);
+ document.body.classList.toggle('has-cart',types>0);
+}
+function addToCart(p){
+ if(!p||!splitDescription(p.description).inStock)return;
+ const id=String(p.id);
+ if(!Object.hasOwn(cart,id)&&Object.keys(cart).length>=30){alert('حداکثر ۳۰ محصول متفاوت در هر سبد مجاز است.');return}
+ cart[id]=Math.min(9999,(cart[id]||0)+1);
+ saveCart();render();
+ $('cartDock').focus({preventScroll:true});
+}
+function changeCartQty(id,qty){
+ if(!Object.hasOwn(cart,id))return;
+ cart[id]=safeQty(qty);saveCart();renderCart();
+}
+function renderCart(){
+ const items=cartEntries();let issue=false;
+ $('cartItems').innerHTML=items.length?items.map(({id,qty,p})=>{
+  const img=p?getImages(p)[0]:null;
+  const inStock=!!(p&&p.is_active&&splitDescription(p.description).inStock);
+  if(!inStock)issue=true;
+  return `<div class="cart-item" data-cart-id="${esc(id)}">
+    ${img?`<img src="${esc(img)}" alt="">`:'<div class="cart-no-photo"></div>'}
+    <div class="cart-details"><strong>${esc(p?.name||'محصول حذف‌شده')}</strong>
+    <span class="small" dir="ltr">${esc(p?productCode(p):'')}</span>
+    ${!inStock?'<span class="small cart-warning">این محصول فعلاً قابل سفارش نیست؛ از سبد حذف کنید.</span>':''}
+    <div class="cart-qty"><button type="button" class="secondary" data-qty-minus="${esc(id)}" aria-label="کاهش تعداد">−</button>
+    <input data-qty-input="${esc(id)}" type="number" min="1" max="9999" value="${qty}" aria-label="تعداد محصول ${esc(p?.name||id)}">
+    <button type="button" class="secondary" data-qty-plus="${esc(id)}" aria-label="افزایش تعداد">+</button></div>
+    <button class="remove-item" type="button" data-cart-remove="${esc(id)}">حذف از سبد</button></div></div>`;
+ }).join(''):'<div class="cart-empty">سبد استعلام خالی است. از بخش محصولات، «افزودن به سبد» را انتخاب کنید.</div>';
+ const totals=cartTotals();
+ $('cartSummary').textContent=items.length?`${totals.types} محصول متفاوت – ${totals.quantity} عدد`:' '; 
+ $('sendCart').disabled=!items.length||issue;
+ $('clearCart').disabled=!items.length;
+ $('cartStatus').textContent=issue?'برای ارسال، محصولات ناموجود یا حذف‌شده را از سبد بردارید.':items.length?'پس از باز شدن تلگرام، ارسال پیام را تأیید کنید.':'';
+ updateCartBadge();
+}
+function openCart(){renderCart();$('cartModal').classList.remove('hidden');document.body.style.overflow='hidden';$('closeCart').focus()}
+function closeCart(){$('cartModal').classList.add('hidden');document.body.style.overflow=''}
+$('openCart').onclick=openCart;$('cartDock').onclick=openCart;$('closeCart').onclick=closeCart;
+$('cartModal').addEventListener('click',e=>{if(e.target===$('cartModal'))closeCart()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('cartModal').classList.contains('hidden'))closeCart()});
+$('cartItems').addEventListener('click',e=>{
+ const minus=e.target.closest('[data-qty-minus]'),plus=e.target.closest('[data-qty-plus]'),remove=e.target.closest('[data-cart-remove]');
+ if(remove){delete cart[remove.dataset.cartRemove];saveCart();renderCart();render();return}
+ if(minus)changeCartQty(minus.dataset.qtyMinus,cart[minus.dataset.qtyMinus]-1);
+ if(plus)changeCartQty(plus.dataset.qtyPlus,cart[plus.dataset.qtyPlus]+1);
+});
+$('cartItems').addEventListener('change',e=>{const input=e.target.closest('[data-qty-input]');if(input)changeCartQty(input.dataset.qtyInput,input.value)});
+$('clearCart').onclick=()=>{if(!confirm('همه محصولات از سبد حذف شوند؟'))return;cart={};saveCart();renderCart();render()};
+$('sendCart').onclick=()=>{
+ const entries=cartEntries();
+ if(!entries.length||entries.some(e=>!e.p||!e.p.is_active||!splitDescription(e.p.description).inStock)){renderCart();return}
+ const total=entries.reduce((sum,e)=>sum+e.qty,0);
+ const lines=['سلام، برای محصولات زیر درخواست استعلام قیمت دارم:',''];
+ entries.forEach(({p,qty},i)=>{
+  lines.push((i+1)+'. '+String(p.name||'').replace(/[\r\n]+/g,' ').slice(0,100));
+  lines.push('کد محصول: '+productCode(p));
+  lines.push('تعداد: '+qty,'');
+ });
+ lines.push('تعداد کل: '+total);
+ // Keep the cart until the customer finishes in Telegram; opening a link is not delivery confirmation.
+ window.location.href='https://t.me/OriginalShapeShop?text='+encodeURIComponent(lines.join('\n'));
+};
 function renderCategories(){
  const categories=['همه',...new Set(products.filter(p=>admin||p.is_active).map(getCategory))];
  if(!categories.includes(activeCategory))activeCategory='همه';
@@ -109,6 +216,7 @@ function render(){
    <div class="card-body"><div class="category">${esc(info.category)}</div><h3>${esc(p.name)}</h3><div class="small">کد محصول: <b dir="ltr">${esc(productCode(p))}</b></div><span class="stock-label ${info.inStock?'':'unavailable'}">${info.inStock?'موجود':'ناموجود'}</span><div class="volume">${esc(p.volume)}</div><p>${esc(info.description)}</p>
    ${!p.is_active?'<p class="notice">مخفی از بازدیدکنندگان</p>':''}
    <button type="button" class="inquiry" data-inquiry="${esc(p.id)}">${info.inStock?'استعلام قیمت و سفارش':'استعلام موجودی'}</button>
+   <button type="button" class="secondary cart-add" data-cart-add="${esc(p.id)}" ${info.inStock?'':'disabled'}>${info.inStock?'افزودن به سبد استعلام':'ناموجود – امکان افزودن نیست'}</button>
    ${admin?`<div class="admin-actions"><button type="button" class="secondary" data-edit="${esc(p.id)}">ویرایش</button><button type="button" class="secondary" data-delete="${esc(p.id)}">حذف</button></div>`:''}
    </div></article>`;
  }).join('');
@@ -118,7 +226,7 @@ async function load(){
  $('status').textContent='در حال دریافت محصولات...';
  const {data,error}=await db.from('products').select('*').order('sort_order',{ascending:true}).order('id',{ascending:false});
  if(error){$('status').textContent='خطا در دریافت محصولات: '+error.message;return}
- products=data||[];render();
+ products=data||[];render();updateCartBadge();
 }
 async function checkAdmin(){
  const {data}=await db.auth.getUser();admin=data?.user?.id===ADMIN_ID;
@@ -164,6 +272,7 @@ $('products').addEventListener('click',async e=>{
   card.dataset.photoIndex=String(next);card.querySelector('.gallery img').src=imgs[next];card.querySelector('.gallery-counter').textContent=`${next+1} / ${imgs.length}`;return;
  }
  const inquiry=e.target.closest('[data-inquiry]');if(inquiry){const p=products.find(x=>String(x.id)===inquiry.dataset.inquiry);if(p)openInquiry(p);return}
+ const add=e.target.closest('[data-cart-add]');if(add){const p=products.find(x=>String(x.id)===add.dataset.cartAdd);if(p)addToCart(p);return}
  if(!admin)return;
  const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');
  if(edit){const p=products.find(x=>String(x.id)===edit.dataset.edit);if(!p)return;const info=splitDescription(p.description);
@@ -171,6 +280,7 @@ $('products').addEventListener('click',async e=>{
  if(del){if(!confirm('این محصول از جدول حذف شود؟'))return;const {error}=await db.from('products').delete().eq('id',Number(del.dataset.delete));$('adminStatus').textContent=error?'خطا: '+error.message:'محصول حذف شد.';if(!error)await load()}
 });
 $('search').addEventListener('input',render);
+updateCartBadge();
 checkAdmin().catch(e=>{$('status').textContent='خطا در اتصال به فروشگاه: '+e.message});
 </script>
 </body>
